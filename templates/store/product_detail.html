@@ -1,2 +1,81 @@
-{% extends 'base.html' %}{% block title %}{{ product.name }} — Technology{% endblock %}
-{% block content %}<a href="{% url 'catalog' %}" class="text-secondary">← Назад в каталог</a><div class="row g-5 mt-2"><div class="col-md-6"><div class="detail-image">{% if product.image %}<img src="{{ product.image.url }}" alt="{{ product.name }}">{% else %}<span>TECH</span>{% endif %}</div></div><div class="col-md-6"><div class="eyebrow">{{ product.category.name }}</div><h1 class="fw-bold mt-2">{{ product.name }}</h1><div class="price display-6 my-3">{{ product.price }} ₽</div><p>{{ product.description|default:"Надёжное оборудование для дома и офиса." }}</p><div class="specs mb-4"><div><span>Производитель</span><b>{{ product.manufacturer|default:"Не указан" }}</b></div><div><span>Год выпуска</span><b>{{ product.year|default:"Не указан" }}</b></div><div><span>Модель</span><b>{{ product.model_name|default:"Не указана" }}</b></div><div><span>Наличие</span><b>{{ product.stock }} шт.</b></div></div>{% if product.stock and user.is_authenticated %}<form method="post" action="{% url 'cart_add' product.pk %}">{% csrf_token %}<button class="btn btn-warning btn-lg">Добавить в корзину</button></form>{% elif product.stock %}<a class="btn btn-dark btn-lg" href="{% url 'login' %}">Войдите, чтобы купить</a>{% else %}<button class="btn btn-secondary btn-lg" disabled>Нет в наличии</button>{% endif %}</div></div>{% endblock %}
+
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ product.name }} — Technology{% endblock %}
+
+{% block content %}
+<div class="product-page">
+    <a href="{% url 'catalog' %}" class="back-link">
+        ← Назад в каталог
+    </a>
+
+    <div class="product-detail">
+        <div class="product-detail-photo">
+            {% if product.image %}
+                <img src="{{ product.image.url }}" alt="{{ product.name }}">
+            {% else %}
+                <div class="product-no-image">TECH</div>
+            {% endif %}
+        </div>
+
+        <div class="product-detail-info">
+            <div class="eyebrow">{{ product.category.name }}</div>
+
+            <h1>{{ product.name }}</h1>
+
+            <div class="product-detail-price">
+                {{ product.price }} ₽
+            </div>
+
+            <p class="product-description">
+                {{ product.description|default:"Надёжное оборудование для дома и офиса." }}
+            </p>
+
+            <div class="product-specs">
+                <div>
+                    <span>Производитель</span>
+                    <b>{{ product.manufacturer|default:"Не указан" }}</b>
+                </div>
+                <div>
+                    <span>Год выпуска</span>
+                    <b>{{ product.year|default:"Не указан" }}</b>
+                </div>
+                <div>
+                    <span>Модель</span>
+                    <b>{{ product.model_name|default:"Не указана" }}</b>
+                </div>
+                <div>
+                    <span>Наличие</span>
+                    <b>
+                        {% if product.stock %}
+                            {{ product.stock }} шт.
+                        {% else %}
+                            Нет в наличии
+                        {% endif %}
+                    </b>
+                </div>
+            </div>
+
+            <div class="product-buy">
+                {% if product.stock and user.is_authenticated %}
+                    <form method="post" action="{% url 'cart_add' product.pk %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-warning btn-lg">
+                            Добавить в корзину
+                        </button>
+                    </form>
+                {% elif product.stock %}
+                    <a class="btn btn-dark btn-lg" href="{% url 'login' %}">
+                        Войдите, чтобы купить
+                    </a>
+                {% else %}
+                    <button class="btn btn-secondary btn-lg" disabled>
+                        Нет в наличии
+                    </button>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
